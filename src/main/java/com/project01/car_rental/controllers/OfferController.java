@@ -7,6 +7,7 @@ import com.project01.car_rental.entities.OfferWithCustomer;
 import com.project01.car_rental.http.AppResponse;
 import com.project01.car_rental.services.CarService;
 import com.project01.car_rental.services.CustomerService;
+import com.project01.car_rental.services.DataValidator;
 import com.project01.car_rental.services.OfferService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +30,13 @@ public class OfferController {
 
     @PostMapping("/offers")
     public ResponseEntity<?> createOffer(@RequestBody Offer offer) {
+        if (!DataValidator.isDateValid(offer.getRentalStart()) || !DataValidator.isDateValid(offer.getRentalEnd())) {
+            return AppResponse.error()
+                    .withCode(HttpStatus.BAD_REQUEST)
+                    .withMessage("Date has invalid values or is in the wrong format. Expected format yyyy-MM-dd")
+                    .build();
+        }
+
         Customer orderCustomer = this.customerService.getCustomerById(offer.getCustomerId());
         if (orderCustomer == null) {
             return AppResponse.error()
@@ -60,6 +68,13 @@ public class OfferController {
 
     @PostMapping("/offers/_createCustomer")
     public ResponseEntity<?> createOfferWithCustomer(@RequestBody OfferWithCustomer offerWithCustomer) {
+        if (!DataValidator.isDateValid(offerWithCustomer.getRentalStart()) || !DataValidator.isDateValid(offerWithCustomer.getRentalEnd())) {
+            return AppResponse.error()
+                    .withCode(HttpStatus.BAD_REQUEST)
+                    .withMessage("Date has invalid values or is in the wrong format. Expected format yyyy-MM-dd")
+                    .build();
+        }
+
         int customerId, carId;
         boolean customerAccidents;
         Customer customerForOffer = this.customerService.getCustomerByNamePhoneAddress(
@@ -153,6 +168,13 @@ public class OfferController {
 
     @PutMapping("/offers")
     public ResponseEntity<?> updateOffer(@RequestBody Offer offer) {
+        if (!DataValidator.isDateValid(offer.getRentalStart()) || !DataValidator.isDateValid(offer.getRentalEnd())) {
+            return AppResponse.error()
+                    .withCode(HttpStatus.BAD_REQUEST)
+                    .withMessage("Date has invalid values or is in the wrong format. Expected format yyyy-MM-dd")
+                    .build();
+        }
+
         if (!this.offerService.updateOffer(offer)) {
             return AppResponse.error()
                     .withCode(HttpStatus.NOT_FOUND)

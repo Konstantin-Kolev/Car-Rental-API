@@ -3,6 +3,7 @@ package com.project01.car_rental.controllers;
 import com.project01.car_rental.entities.Car;
 import com.project01.car_rental.http.AppResponse;
 import com.project01.car_rental.services.CarService;
+import com.project01.car_rental.services.DataValidator;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -23,7 +24,7 @@ public class CarController {
 
     @PostMapping("/cars")
     public ResponseEntity<?> createCar(@RequestBody Car car) {
-        if (!car.isValidCity()) {
+        if (!DataValidator.isCityValid(car.getLocation())) {
             return AppResponse.error()
                     .withCode(HttpStatus.BAD_REQUEST)
                     .withMessage("Location is invalid")
@@ -48,6 +49,12 @@ public class CarController {
         if (location == null) {
             cars = this.carService.getAllCars();
         } else {
+            if (!DataValidator.isCityValid(location)) {
+                return AppResponse.error()
+                        .withCode(HttpStatus.BAD_REQUEST)
+                        .withMessage("Location is invalid")
+                        .build();
+            }
             cars = this.carService.getCarsByLocation(location);
         }
 
@@ -73,7 +80,7 @@ public class CarController {
 
     @PutMapping("/cars")
     public ResponseEntity<?> updateCar(@RequestBody Car car) {
-        if (!car.isValidCity()) {
+        if (!DataValidator.isCityValid(car.getLocation())) {
             return AppResponse.error()
                     .withCode(HttpStatus.BAD_REQUEST)
                     .withMessage("Location is invalid")

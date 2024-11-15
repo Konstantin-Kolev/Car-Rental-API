@@ -5,8 +5,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.List;
 
 public class Car {
-    private final List<String> VALID_CITIES = List.of("Sofia", "Plovdiv", "Varna", "Burgas");
-
     private int id;
     private String model;
     private String location;
@@ -51,10 +49,5 @@ public class Car {
 
     public void setAvailable(boolean available) {
         isAvailable = available;
-    }
-
-    @JsonIgnore
-    public boolean isValidCity() {
-        return this.VALID_CITIES.contains(this.location);
     }
 }
